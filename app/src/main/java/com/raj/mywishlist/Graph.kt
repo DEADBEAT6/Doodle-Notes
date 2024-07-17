@@ -1,9 +1,7 @@
 package com.raj.mywishlist
 
 import android.content.Context
-import androidx.room.Database
 import androidx.room.Room
-import com.raj.mywishlist.data.Wish
 import com.raj.mywishlist.data.WishDatabase
 import com.raj.mywishlist.data.WishRepository
 

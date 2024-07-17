@@ -1,18 +1,17 @@
 package com.raj.mywishlist
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-fun convertListToByteArray(lines: List<List<Point>>): ByteArray {
+fun convertListToJsonString(lines: List<List<Point>>): String {
     val gson = Gson()
-    val jsonString = gson.toJson(lines)
-    return jsonString.toByteArray()
+    return gson.toJson(lines)
 }
 
-fun convertByteArrayToList(byteArray: ByteArray): List<List<Point>> {
-    val jsonString = String(byteArray)
+
+fun convertJsonStringToList(jsonString: String): List<List<Point>> {
     val gson = Gson()
     val type = object : TypeToken<List<List<Point>>>() {}.type
-    return gson.fromJson(jsonString, type)
+    val result = gson.fromJson<List<List<Point>>>(jsonString, type) // Explicit type
+    return result ?: emptyList() // Handle null result
 }

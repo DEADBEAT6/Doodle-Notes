@@ -6,12 +6,12 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "wish-table")
 data class Wish(
     @PrimaryKey(autoGenerate = true)
-    val id: Long =  0L,
+    var id: Long =  0L,
     @ColumnInfo(name="wish-title")
     val title: String = "",
     @ColumnInfo(name="wish-desc")
     val description: String = "",
     @ColumnInfo(name="wish-draw")
-    val drawing: ByteArray? = null
+    val drawingJson: String = ""
 )
 

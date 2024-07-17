@@ -1,157 +1,231 @@
 package com.raj.mywishlist.screens
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissValue
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.raj.mywishlist.screens.components.AppBarView
-import com.raj.mywishlist.navigation.Screen
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
+import com.raj.mywishlist.R
 import com.raj.mywishlist.WishViewModel
 import com.raj.mywishlist.data.Wish
+import com.raj.mywishlist.navigation.Screen
+import com.raj.mywishlist.screens.components.AppBarView
+import com.raj.mywishlist.screens.components.TwoColumnGridScreen
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeView(
     navController: NavController,
     viewModel: WishViewModel
 ) {
+
     Scaffold(
         topBar = {
             AppBarView(
-                "Wishlist",
+                "Doodle Notes",
                 onBackNavClicked = {
-
-
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(modifier = Modifier.padding(all = 20.dp),
-                contentColor = Color.White,
                 backgroundColor = Color.Black,
 
                 onClick = { //add navigation to home screen/
                     navController.navigate(Screen.AddScreen.route + "/0L")
 
                 }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.White)
+                Icon(
+                    painter = painterResource(id = R.drawable.sharp_heart_broken_24),
+                    contentDescription = null,
+                    tint = Color.Red
+                )
             }
         }
 
     )
     {
-        val wishList = viewModel.getAllWishes.collectAsState(initial = listOf())
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            items(wishList.value, key = { wish -> wish.id }) { wish ->
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                            viewModel.deleteWish(wish)
-                        }
-                        true
-                    }
-                )
-                SwipeToDismiss(state = dismissState,
-                    background = {
-                        val color by animateColorAsState(
-                            if (dismissState.dismissDirection == DismissDirection.EndToStart ||
-                                dismissState.dismissDirection == DismissDirection.StartToEnd
-                            ) Color.Red else Color.Transparent, label = ""
-                        )
-                        val alignment =
-                            if (dismissState.dismissDirection == DismissDirection.EndToStart) Alignment.CenterEnd else Alignment.CenterStart
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(color)
-                                .padding(20.dp),
-                            contentAlignment = alignment
-                        ) {
-                            Column {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete Icon",
-                                    tint = Color.White
-                                )
-                            }
-                        }
+        val wishList by viewModel.getAllWishes.collectAsState(initial = emptyList())
+
+        TwoColumnGridScreen(
+            wishList = wishList,
+            navController = navController,
+            viewModel = viewModel,
+            padding = it
+        )
 
 
-                    },
-                    directions = setOf(DismissDirection.EndToStart, DismissDirection.StartToEnd),
-                    dismissThresholds = { FractionalThreshold(0.25f) },
-                    dismissContent = {
-                        WishItem(wish = wish) {
-                            val id = wish.id
-                            navController.navigate(Screen.AddScreen.route + "/$id")
-                        }
-                    }
-                )
-
-
-            }
-
-        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WishItem(wish: Wish, onClick: () -> Unit) {
+    val state = rememberRichTextState()
+    state.setHtml(wish.description)
+    val colors = listOf(
+        colorResource(id = R.color.card_color1),
+        colorResource(id = R.color.card_color2),
+        colorResource(id = R.color.card_color3),
+        colorResource(id = R.color.card_color4),
+        colorResource(id = R.color.card_color5),
+
+        )
+    val personalColor = wish.id.toInt() % colors.size
+    // Select a random color
+    val color = colors[personalColor]
     Card(
         modifier = Modifier
+            .wrapContentHeight()
             .fillMaxWidth()
-           // .height(100.dp)
-           // .width(100.dp)
+            // .height(100.dp)
+            // .width(100.dp)
 
             .padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
             .clickable {
                 onClick()
             },
         elevation = 10.dp,
-        backgroundColor = Color.White
+        backgroundColor = color
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = wish.title, fontWeight = FontWeight.Bold)
-            Text(text = wish.description)
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .padding(start = 5.dp)
+        ) {
+            Text(text = wish.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            val a = 10
+            RichTextEditor(
+                modifier = Modifier.fillMaxWidth(),
+                state = state,
+                textStyle = TextStyle(Color.Black),
+                colors = RichTextEditorDefaults.richTextEditorColors(containerColor = Color.Transparent),
+                enabled = false,
+                contentPadding = RichTextEditorDefaults.richTextEditorWithoutLabelPadding(
+                    start = 4.dp,
+                    end = a.dp,
+                    top = a.dp,
+                    bottom = a.dp
+                )
+
+            )
 
         }
     }
 
 }
+
+//
+//
+//@Composable
+//fun TwoColumnGridScreen1(
+//    wishLis: List<Wish>,
+//    navController: NavController,
+//    viewModel: WishViewModel,
+//    padding: PaddingValues
+//) {
+//    Column {
+//
+//
+//        if (wishLis.isNotEmpty()) {
+//            LazyVerticalStaggeredGrid(
+//                state = LazyStaggeredGridState(),
+//                columns = StaggeredGridCells.Fixed(2),
+//                verticalItemSpacing = 4.dp,
+//                horizontalArrangement = Arrangement.spacedBy(4.dp),
+//                content = {
+//                    items(wishLis, key = { wish -> wish.id }) { wish ->
+//                        val dismissState = rememberDismissState(
+//                            confirmStateChange = { dismissValue ->
+//                                if (dismissValue == DismissValue.DismissedToEnd || dismissValue == DismissValue.DismissedToStart) {
+//                                    viewModel.deleteWish(wish)
+//                                }
+//                                true
+//                            }
+//                        )
+//
+//                        SwipeToDismiss(
+//                            state = dismissState,
+//                            background = {
+//                                val dismissDirection =
+//                                    dismissState.dismissDirection ?: return@SwipeToDismiss
+//                                val color = animateColorAsState(
+//                                    targetValue = if (dismissDirection == DismissDirection.EndToStart ||
+//                                        dismissDirection == DismissDirection.StartToEnd
+//                                    ) Color.Red else Color.Transparent
+//                                ).value
+//
+//                                Box(
+//                                    modifier = Modifier
+//                                        .fillMaxSize()
+//                                        .background(color)
+//                                        .padding(20.dp),
+//                                    contentAlignment = Alignment.Center
+//                                ) {
+//                                    Icon(
+//                                        imageVector = Icons.Default.Delete,
+//                                        contentDescription = "Delete Icon",
+//                                        tint = Color.White
+//                                    )
+//                                }
+//                            },
+//                            directions = setOf(
+//                                DismissDirection.EndToStart,
+//                                DismissDirection.StartToEnd
+//                            ),
+//                            dismissThresholds = { FractionalThreshold(0.9f) },
+//                            dismissContent = {
+//                                WishItem(wish = wish) {
+//                                    val id = wish.id
+//                                    navController.navigate(Screen.AddScreen.route + "/$id")
+//                                }
+//                            }
+//                        )
+//
+//                    }
+//                },
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .weight(1f)
+//                    .padding(padding),
+//            )
+//        } else {
+//            Row(
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.fillMaxSize()
+//            ) {
+//                Text(
+//                    text = "No Notes Exist ",
+//                    style = TextStyle(
+//                        fontSize = 20.sp
+//                    )
+//                )
+//            }
+//        }
+//    }
+//}
+//
+//
+

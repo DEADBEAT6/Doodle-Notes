@@ -1,14 +1,17 @@
 
-package com.raj.mywishlist
+package com.raj.mywishlist.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
@@ -25,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.raj.mywishlist.Drawing
+import com.raj.mywishlist.R
+import com.raj.mywishlist.WishViewModel
+import com.raj.mywishlist.convertJsonStringToList
 import com.raj.mywishlist.data.Wish
 import com.raj.mywishlist.screens.components.AppBarView
 import kotlinx.coroutines.launch
@@ -43,21 +52,28 @@ fun AddEditDetailView(
     viewModel: WishViewModel,
     navController: NavController
 ){
-
+    val context = LocalContext.current
     val snackMessage = remember {
         mutableStateOf("")
     }
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     val isButtonClicked = remember { mutableStateOf(false) }
-    val wish = viewModel.getAWishById(id).collectAsState(initial = Wish(0L,"","", null))
     if (id != 0L){
+        val wish = viewModel.getAWishById(id).collectAsState(initial = Wish(0L,"","", ""))
         viewModel.wishTitleState = wish.value.title
         viewModel.wishDescriptionState = wish.value.description
-        viewModel.wishDrawingState = wish.value.drawing
-        viewModel.wishdrawlist = viewModel.wishDrawingState?.let { convertByteArrayToList(it) } ?: emptyList()
-
+        viewModel.wishDrawingState = wish.value.drawingJson
+        viewModel.wishdrawlist = convertJsonStringToList(wish.value.drawingJson)
     }
+    else{
+        viewModel.wishTitleState = ""
+        viewModel.wishDescriptionState = ""
+        viewModel.wishDrawingState = ""
+        viewModel.wishdrawlist = emptyList()
+    }
+    val state = rememberRichTextState()
+
 
     Scaffold(
         scaffoldState =scaffoldState,
@@ -69,7 +85,7 @@ fun AddEditDetailView(
 
                 onBackNavClicked = {navController.navigateUp()})
         }
-    ){
+    ){ it ->
         Column(modifier = Modifier
             .padding(it)
             .wrapContentSize(),
@@ -78,6 +94,7 @@ fun AddEditDetailView(
         {
             Spacer(modifier = Modifier.height(10.dp))
             WishTextField(
+                modifier = Modifier.padding(3.dp).padding(start = 10.dp,end = 12.dp),
                 label = "Title",
                 value = viewModel.wishTitleState ,
                 onValueChanged = {
@@ -85,53 +102,65 @@ fun AddEditDetailView(
                 }
             )
 
-            Drawing(viewModel = viewModel, modifier = Modifier.fillMaxSize().weight(1f))
+            Drawing(viewModel = viewModel, modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),state, id = id)
 
-            Spacer(modifier = Modifier.height(10.dp))
-            Button(onClick = { /*TODO*/ if(!isButtonClicked.value){
+
+            Button(modifier = Modifier.fillMaxWidth(),
+                onClick = { /*TODO*/ if(!isButtonClicked.value){
                 isButtonClicked.value = true
                 if(viewModel.wishTitleState.isNotEmpty() ){
                     if(id!=0L){
+
                         viewModel.updateWish(
                             Wish(
                                 id= id ,
                                 title = viewModel.wishTitleState.trim(),
-                                description = viewModel.wishDescriptionState.trim(),
-                                drawing = viewModel.wishDrawingState)
+                                description = state.toHtml(),
+                                drawingJson = viewModel.wishDrawingState)
                         )
                         snackMessage.value = "Wish Has been Updated Complete!! "
+                        navController.navigateUp()
 
                     }else{
+
                         viewModel.addWish(
                             Wish(title = viewModel.wishTitleState.trim(),
-                                description = viewModel.wishDescriptionState.trim(),
-                                drawing = viewModel.wishDrawingState)
+                                description = state.toHtml(),
+                                drawingJson = viewModel.wishDrawingState)
                         )
                         snackMessage.value = "Wish Has been Created !! "
+                        navController.navigateUp()
                     }
-                    //TODO updata and add wish
+                    //TODO update and add wish
 
 
                 }else{
-                    snackMessage.value= "Enter fields to create a wish"
+                    snackMessage.value= "Title cannot be blank ! "
 
                 }
+
                 scope.launch {
-                    scaffoldState.snackbarHostState.showSnackbar(snackMessage.value )
-                    navController.navigateUp()
+                    Toast.makeText(context,snackMessage.value,Toast.LENGTH_SHORT).show()
+
                 }
             }
             },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
-                    contentColor = Color.White
-                )
+                    contentColor = Color.White,
+                ),
+                shape = RoundedCornerShape(0f)
             ) {
-                Text(
-                    text = if(id!= 0L) stringResource(id = R.string.update_wish)
-                    else stringResource(id = R.string.add_wish),
-                    style = TextStyle(fontSize = 18.sp)
-                )
+                Row (horizontalArrangement = Arrangement.Center){
+                    Text(
+                        text = if(id!= 0L) stringResource(id = R.string.update_wish)
+                        else stringResource(id = R.string.add_wish),
+                        style = TextStyle(fontSize = 18.sp)
+                    )
+                }
+
             }
         }
     }
@@ -139,6 +168,7 @@ fun AddEditDetailView(
 
 @Composable
 fun WishTextField(
+    modifier: Modifier,
     label : String,
     value: String,
     onValueChanged : (String) ->Unit
@@ -147,7 +177,7 @@ fun WishTextField(
         value = value ,
         onValueChange = onValueChanged,
         label = {Text(text = label,color= Color.Black)},
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
         ),
@@ -165,6 +195,6 @@ fun WishTextField(
 @Preview
 @Composable
 fun WishTextFieldPrev(){
-    WishTextField(label = "label", value = " text", onValueChanged = {})
+    WishTextField(label = "label", value = " text", onValueChanged = {}, modifier = Modifier)
 
 }

@@ -1,7 +1,6 @@
-package com.raj.mywishlist.richtextfield
+package com.raj.myapplication.MainScreen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
-import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.FormatAlignCenter
 import androidx.compose.material.icons.filled.FormatAlignLeft
 import androidx.compose.material.icons.filled.FormatBold
@@ -24,16 +22,15 @@ import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.FormatUnderlined
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Title
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,8 +45,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.mohamedrejeb.richeditor.model.RichTextState
-import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
+import com.raj.mywishlist.WishViewModel
+
 //import com.stevdza.san.comptest.components.LinkDialog
 
 /**
@@ -59,67 +58,75 @@ implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta03")
 // Extension Icons
 implementation("androidx.compose.material:material-icons-extended:1.5.3")
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
-    val state = rememberRichTextState()
+fun RichTextInput(viewModel: WishViewModel, state: RichTextState, isDrawingMode: Boolean,id:Long) {
+
     val titleSize = MaterialTheme.typography.displaySmall.fontSize
     val subtitleSize = MaterialTheme.typography.titleLarge.fontSize
-
-    Scaffold {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(all = 20.dp)
-                .padding(bottom = it.calculateBottomPadding())
-                .padding(top = it.calculateTopPadding()),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            EditorControls(
-                modifier = Modifier.weight(2f),
-                state = state,
-                onBoldClick = {
-                    state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                },
-                onItalicClick = {
-                    state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
-                },
-                onUnderlineClick = {
-                    state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-                },
-                onTitleClick = {
-                    state.toggleSpanStyle(SpanStyle(fontSize = titleSize))
-                },
-                onSubtitleClick = {
-                    state.toggleSpanStyle(SpanStyle(fontSize = subtitleSize))
-                },
-                onTextColorClick = {
-                    state.toggleSpanStyle(SpanStyle(color = Color.Red))
-                },
-                onStartAlignClick = {
-                    state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Start))
-                },
-                onEndAlignClick = {
-                    state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.End))
-                },
-                onCenterAlignClick = {
-                    state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Center))
-                },
-                onExportClick = {
-                    Log.d("Editor", state.toHtml())
-                }
-            )
-            RichTextEditor(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(8f),
-                state = state,
-            )
+    LaunchedEffect(viewModel.wishDescriptionState) {
+        if (viewModel.wishDescriptionState.isNotBlank()) {
+            state.setHtml(viewModel.wishDescriptionState)
         }
-
     }
+
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(1.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        EditorControls(
+            state = state,
+            onBoldClick = {
+                state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+            },
+            onItalicClick = {
+                state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
+            },
+            onUnderlineClick = {
+                state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+            },
+            onTitleClick = {
+                state.toggleSpanStyle(SpanStyle(fontSize = titleSize))
+            },
+            onSubtitleClick = {
+                state.toggleSpanStyle(SpanStyle(fontSize = subtitleSize))
+            },
+            onTextColorClick = {
+                state.toggleSpanStyle(SpanStyle(color = Color.Red))
+            },
+            onStartAlignClick = {
+                state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Start))
+            },
+            onEndAlignClick = {
+                state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.End))
+            },
+            onCenterAlignClick = {
+                state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Center))
+            },
+
+            )
+
+
+        RichTextEditor(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            state = state,
+            colors = RichTextEditorDefaults.richTextEditorColors(containerColor = Color.Transparent),
+            readOnly = !isDrawingMode,
+
+        )
+    }
+
 }
+
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -135,43 +142,22 @@ fun EditorControls(
     onStartAlignClick: () -> Unit,
     onEndAlignClick: () -> Unit,
     onCenterAlignClick: () -> Unit,
-    onExportClick: () -> Unit,
-) {
+
+    ) {
     var boldSelected by rememberSaveable { mutableStateOf(false) }
     var italicSelected by rememberSaveable { mutableStateOf(false) }
     var underlineSelected by rememberSaveable { mutableStateOf(false) }
     var titleSelected by rememberSaveable { mutableStateOf(false) }
     var subtitleSelected by rememberSaveable { mutableStateOf(false) }
     var textColorSelected by rememberSaveable { mutableStateOf(false) }
-    var linkSelected by rememberSaveable { mutableStateOf(false) }
     var alignmentSelected by rememberSaveable { mutableIntStateOf(0) }
-
-    var showLinkDialog by remember { mutableStateOf(false) }
-
-//    AnimatedVisibility(visible = showLinkDialog) {
-//        LinkDialog(
-//            onDismissRequest = {
-//                showLinkDialog = false
-//                linkSelected = false
-//            },
-//            onConfirmation = { linkText, link ->
-//                state.addLink(
-//                    text = linkText,
-//                    url = link
-//                )
-//                showLinkDialog = false
-//                linkSelected = false
-//            }
-//        )
-//    }
 
     FlowRow(
         modifier = modifier
+            .background(Color.White)
             .fillMaxWidth()
-            .padding(all = 10.dp)
-            .padding(bottom = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(bottom = 5.dp, start = 5.dp, end = 5.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.5.dp),
     ) {
         ControlWrapper(
             selected = boldSelected,
@@ -240,17 +226,6 @@ fun EditorControls(
             )
         }
         ControlWrapper(
-            selected = linkSelected,
-            onChangeClick = { linkSelected = it },
-            onClick = { showLinkDialog = true }
-        ) {
-            Icon(
-                imageVector = Icons.Default.AddLink,
-                contentDescription = "Link Control",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-        ControlWrapper(
             selected = alignmentSelected == 0,
             onChangeClick = { alignmentSelected = 0 },
             onClick = onStartAlignClick
@@ -275,23 +250,11 @@ fun EditorControls(
         ControlWrapper(
             selected = alignmentSelected == 2,
             onChangeClick = { alignmentSelected = 2 },
-            onClick = onEndAlignClick
+            onClick = onEndAlignClick,
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.FormatAlignRight,
                 contentDescription = "End Align Control",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-        ControlWrapper(
-            selected = true,
-            selectedColor = MaterialTheme.colorScheme.tertiary,
-            onChangeClick = { },
-            onClick = onExportClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Save,
-                contentDescription = "Export Control",
                 tint = MaterialTheme.colorScheme.onPrimary
             )
         }

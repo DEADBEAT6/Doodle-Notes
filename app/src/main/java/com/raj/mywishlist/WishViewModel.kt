@@ -1,5 +1,6 @@
 package com.raj.mywishlist
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,12 +18,14 @@ class WishViewModel(
 
     var wishTitleState by mutableStateOf("")
     var wishDescriptionState by mutableStateOf("")
-    var wishDrawingState by mutableStateOf<ByteArray?>(null)
+    var wishDrawingState by mutableStateOf("")
     var wishdrawlist by mutableStateOf<List<List<Point>>>(emptyList())
+
 
     fun addDrawing(lineList: List<Point>) {
         wishdrawlist = wishdrawlist.toMutableList().apply {
             add(lineList.toList())
+            Log.d("added", wishdrawlist.toString())
         }
         updateDrawingState()
     }
@@ -32,6 +35,7 @@ class WishViewModel(
         if (wishdrawlist.isNotEmpty()) {
             wishdrawlist = wishdrawlist.toMutableList().apply {
                 removeAt(lastIndex)
+                Log.d("Undo", wishdrawlist.toString())
             }
             updateDrawingState()
         }
@@ -39,7 +43,8 @@ class WishViewModel(
 
     // Function to update the drawing state when the drawing changes
     private fun updateDrawingState() {
-        wishDrawingState = convertListToByteArray(wishdrawlist)
+        wishDrawingState = convertListToJsonString(wishdrawlist)
+        Log.d("wishDrawingState", wishDrawingState.toString())
     }
 
 

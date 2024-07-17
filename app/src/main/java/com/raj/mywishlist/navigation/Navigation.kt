@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.raj.mywishlist.AddEditDetailView
+import com.raj.mywishlist.screens.AddEditDetailView
 import com.raj.mywishlist.WishViewModel
 
 import com.raj.mywishlist.screens.HomeView

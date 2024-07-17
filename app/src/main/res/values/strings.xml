@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Wishlist</string>
-    <string name="update_wish">Update Wish</string>
-    <string name="add_wish">Add Wish</string>
+    <string name="app_name">Doodle Notes</string>
+    <string name="update_wish">Update Note</string>
+    <string name="add_wish">Add Note</string>
 </resources>
