@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -145,9 +144,9 @@ fun Drawing(viewModel: WishViewModel, modifier: Modifier, state: RichTextState, 
             }) {
             Column {
                 if (isDrawingMode) {
-                    RichTextInput(viewModel, state, !isDrawingMode, id = id)
+                    RichTextInput(viewModel, state, !isDrawingMode)
                 } else {
-                    RichTextInput(viewModel, state, !isDrawingMode, id = id)
+                    RichTextInput(viewModel, state, !isDrawingMode)
                 }
 
             }
