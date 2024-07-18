@@ -65,7 +65,7 @@ fun RichTextInput(
     viewModel: WishViewModel,
     state: RichTextState,
     isDrawingMode: Boolean,
-    id: Long
+
 ) {
 
     val titleSize = MaterialTheme.typography.displaySmall.fontSize
@@ -87,7 +87,6 @@ fun RichTextInput(
     ) {
 
         EditorControls(
-            state = state,
             onBoldClick = {
                 state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
             },
@@ -137,7 +136,6 @@ fun RichTextInput(
 @Composable
 fun EditorControls(
     modifier: Modifier = Modifier,
-    state: RichTextState,
     onBoldClick: () -> Unit,
     onItalicClick: () -> Unit,
     onUnderlineClick: () -> Unit,

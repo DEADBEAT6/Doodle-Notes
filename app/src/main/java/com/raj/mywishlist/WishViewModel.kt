@@ -52,7 +52,6 @@ class WishViewModel(
     // Function to update the drawing state when the drawing changes
     private fun updateDrawingState() {
         wishDrawingState = convertListToJsonString(wishdrawlist)
-        Log.d("wishDrawingState", wishDrawingState.toString())
     }
 
     fun onWishTitleChange(newString: String) {
