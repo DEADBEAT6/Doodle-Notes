@@ -15,8 +15,11 @@ Doodle Notes is an Android app that allows users to create and manage notes with
 
 ## 📸 Screenshots
 
-![Home Page](path/to/homepage-screenshot.png)
-![Add/Edit Note](path/to/add-edit-note-screenshot.png)
+![home](https://github.com/user-attachments/assets/ee6b48e3-8f14-43d8-a39e-35ce4ee1929f)
+![search](https://github.com/user-attachments/assets/5e30a699-95b8-437d-bfb5-6a086282b256)
+![addnote](https://github.com/user-attachments/assets/f51e10cc-cff9-4b10-95d8-dc85aa3ceab1)
+![Delete](https://github.com/user-attachments/assets/40ec6873-4b51-4a07-8dc0-cab4b2c76af0)
+
 
 ## 🛠️ Installation
 
