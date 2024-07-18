@@ -1,4 +1,3 @@
-
 package com.raj.mywishlist.screens
 
 import android.widget.Toast
@@ -44,14 +43,13 @@ import com.raj.mywishlist.WishViewModel
 import com.raj.mywishlist.convertJsonStringToList
 import com.raj.mywishlist.data.Wish
 import com.raj.mywishlist.screens.components.AppBarView
-import kotlinx.coroutines.launch
 
 @Composable
 fun AddEditDetailView(
     id: Long,
     viewModel: WishViewModel,
     navController: NavController
-){
+) {
     val context = LocalContext.current
     val snackMessage = remember {
         mutableStateOf("")
@@ -59,14 +57,13 @@ fun AddEditDetailView(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
     val isButtonClicked = remember { mutableStateOf(false) }
-    if (id != 0L){
-        val wish = viewModel.getAWishById(id).collectAsState(initial = Wish(0L,"","", ""))
+    if (id != 0L) {
+        val wish = viewModel.getAWishById(id).collectAsState(initial = Wish(0L, "", "", ""))
         viewModel.wishTitleState = wish.value.title
         viewModel.wishDescriptionState = wish.value.description
         viewModel.wishDrawingState = wish.value.drawingJson
         viewModel.wishdrawlist = convertJsonStringToList(wish.value.drawingJson)
-    }
-    else{
+    } else {
         viewModel.wishTitleState = ""
         viewModel.wishDescriptionState = ""
         viewModel.wishDrawingState = ""
@@ -76,86 +73,94 @@ fun AddEditDetailView(
 
 
     Scaffold(
-        scaffoldState =scaffoldState,
+        scaffoldState = scaffoldState,
         topBar = {
 
             AppBarView(
-                title = if(id!= 0L) stringResource(id = R.string.update_wish)
+                title = if (id != 0L) stringResource(id = R.string.update_wish)
                 else stringResource(id = R.string.add_wish),
-
-                onBackNavClicked = {navController.navigateUp()})
+                onBackNavClicked = { navController.navigateUp() },
+                showSearchBar = false,
+                searchText = ""
+            )
         }
-    ){ it ->
-        Column(modifier = Modifier
-            .padding(it)
-            .wrapContentSize(),
+    ) { it ->
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center)
+            verticalArrangement = Arrangement.Center
+        )
         {
             Spacer(modifier = Modifier.height(10.dp))
             WishTextField(
-                modifier = Modifier.padding(3.dp).padding(start = 10.dp,end = 12.dp),
+                modifier = Modifier
+                    .padding(3.dp)
+                    .padding(start = 10.dp, end = 12.dp),
                 label = "Title",
-                value = viewModel.wishTitleState ,
+                value = viewModel.wishTitleState,
                 onValueChanged = {
                     viewModel.onWishTitleChange(it)
                 }
             )
 
-            Drawing(viewModel = viewModel, modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),state, id = id)
+            Drawing(
+                viewModel = viewModel, modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f), state, id = id
+            )
 
 
-            Button(modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ if(!isButtonClicked.value){
-                isButtonClicked.value = true
-                if(viewModel.wishTitleState.isNotEmpty() ){
-                    if(id!=0L){
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { /*TODO*/ if (!isButtonClicked.value) {
 
-                        viewModel.updateWish(
-                            Wish(
-                                id= id ,
-                                title = viewModel.wishTitleState.trim(),
-                                description = state.toHtml(),
-                                drawingJson = viewModel.wishDrawingState)
-                        )
-                        snackMessage.value = "Wish Has been Updated Complete!! "
-                        navController.navigateUp()
+                    if (viewModel.wishTitleState.isNotEmpty()) {
+                        isButtonClicked.value = true
+                        if (id != 0L) {
 
-                    }else{
+                            viewModel.updateWish(
+                                Wish(
+                                    id = id,
+                                    title = viewModel.wishTitleState.trim(),
+                                    description = state.toHtml(),
+                                    drawingJson = viewModel.wishDrawingState
+                                )
+                            )
+                            snackMessage.value = "Note Has been Updated Complete!! "
+                            navController.navigateUp()
 
-                        viewModel.addWish(
-                            Wish(title = viewModel.wishTitleState.trim(),
-                                description = state.toHtml(),
-                                drawingJson = viewModel.wishDrawingState)
-                        )
-                        snackMessage.value = "Wish Has been Created !! "
-                        navController.navigateUp()
+                        } else {
+
+                            viewModel.addWish(
+                                Wish(
+                                    title = viewModel.wishTitleState.trim(),
+                                    description = state.toHtml(),
+                                    drawingJson = viewModel.wishDrawingState
+                                )
+                            )
+                            snackMessage.value = "Note Has been Created !! "
+                            navController.navigateUp()
+                        }
+
+                    } else {
+                        snackMessage.value = "Title cannot be blank ! "
+
                     }
-                    //TODO update and add wish
-
-
-                }else{
-                    snackMessage.value= "Title cannot be blank ! "
+                    Toast.makeText(context, snackMessage.value, Toast.LENGTH_SHORT).show()
 
                 }
-
-                scope.launch {
-                    Toast.makeText(context,snackMessage.value,Toast.LENGTH_SHORT).show()
-
-                }
-            }
-            },
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White,
                 ),
                 shape = RoundedCornerShape(0f)
             ) {
-                Row (horizontalArrangement = Arrangement.Center){
+                Row(horizontalArrangement = Arrangement.Center) {
                     Text(
-                        text = if(id!= 0L) stringResource(id = R.string.update_wish)
+                        text = if (id != 0L) stringResource(id = R.string.update_wish)
                         else stringResource(id = R.string.add_wish),
                         style = TextStyle(fontSize = 18.sp)
                     )
@@ -169,14 +174,14 @@ fun AddEditDetailView(
 @Composable
 fun WishTextField(
     modifier: Modifier,
-    label : String,
+    label: String,
     value: String,
-    onValueChanged : (String) ->Unit
-){
+    onValueChanged: (String) -> Unit
+) {
     OutlinedTextField(
-        value = value ,
+        value = value,
         onValueChange = onValueChanged,
-        label = {Text(text = label,color= Color.Black)},
+        label = { Text(text = label, color = Color.Black) },
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
@@ -184,7 +189,7 @@ fun WishTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorResource(id = R.color.black),
             unfocusedBorderColor = colorResource(id = R.color.black),
-            cursorColor = colorResource (id = R.color.black),
+            cursorColor = colorResource(id = R.color.black),
             focusedLabelColor = colorResource(id = R.color.black),
             unfocusedLabelColor = colorResource(id = R.color.black),
         )
@@ -194,7 +199,7 @@ fun WishTextField(
 
 @Preview
 @Composable
-fun WishTextFieldPrev(){
+fun WishTextFieldPrev() {
     WishTextField(label = "label", value = " text", onValueChanged = {}, modifier = Modifier)
 
 }

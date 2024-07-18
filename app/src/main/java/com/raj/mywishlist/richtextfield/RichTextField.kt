@@ -61,7 +61,12 @@ implementation("androidx.compose.material:material-icons-extended:1.5.3")
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun RichTextInput(viewModel: WishViewModel, state: RichTextState, isDrawingMode: Boolean,id:Long) {
+fun RichTextInput(
+    viewModel: WishViewModel,
+    state: RichTextState,
+    isDrawingMode: Boolean,
+    id: Long
+) {
 
     val titleSize = MaterialTheme.typography.displaySmall.fontSize
     val subtitleSize = MaterialTheme.typography.titleLarge.fontSize
@@ -122,7 +127,7 @@ fun RichTextInput(viewModel: WishViewModel, state: RichTextState, isDrawingMode:
             colors = RichTextEditorDefaults.richTextEditorColors(containerColor = Color.Transparent),
             readOnly = !isDrawingMode,
 
-        )
+            )
     }
 
 }

@@ -1,6 +1,7 @@
 package com.raj.mywishlist.screens.components
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -11,14 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.raj.mywishlist.R
 import com.raj.mywishlist.WishViewModel
 import com.raj.mywishlist.data.Wish
 import com.raj.mywishlist.navigation.Screen
@@ -61,7 +64,8 @@ fun TwoColumnGridScreen(
     var deleteBoxBounds by remember { mutableStateOf<Rect?>(null) }
     var isDragging by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
+    var itemBounds by remember { mutableStateOf<Rect?>(null) }
+    var delete by remember { mutableStateOf(Color.LightGray) }
 
     Box(
         modifier = Modifier
@@ -79,6 +83,8 @@ fun TwoColumnGridScreen(
                         var offset by remember { mutableStateOf(Offset(0f, 0f)) }
                         val initialOffset = remember { mutableStateOf(Offset(0f, 0f)) }
                         var isHeld by remember { mutableStateOf(false) }
+                        var isCollided by remember { mutableStateOf(false) }
+
 
                         Box(
                             modifier = Modifier
@@ -88,15 +94,25 @@ fun TwoColumnGridScreen(
                                         onDragStart = {
                                             isHeld = true
                                             CoroutineScope(Dispatchers.Main).launch {
-                                                 // Delay for hold duration
+                                                // Delay for hold duration
                                                 if (isHeld) {
                                                     triggerVibrationLong(context)
                                                     isDragging = true
                                                     initialOffset.value = offset
                                                 }
+
                                             }
                                         },
                                         onDragEnd = {
+                                            if (deleteBoxBounds != null && itemBounds!!.overlaps(
+                                                    deleteBoxBounds!!
+                                                ) && isHeld
+                                            ) {
+                                                viewModel.deleteWish(wish)
+                                                playSound(context, R.raw.delete_sound)
+                                                isDragging = false
+                                            }
+                                            isCollided = false
                                             isHeld = false
                                             isDragging = false
                                             offset = initialOffset.value
@@ -104,6 +120,7 @@ fun TwoColumnGridScreen(
                                         onDragCancel = {
                                             isHeld = false
                                             isDragging = false
+                                            isCollided = false
                                             offset = initialOffset.value
                                         }
                                     ) { change, dragAmount ->
@@ -111,16 +128,29 @@ fun TwoColumnGridScreen(
                                             change.consume()
                                             offset += dragAmount
                                         }
+                                        if (deleteBoxBounds != null && itemBounds!!.overlaps(
+                                                deleteBoxBounds!!
+                                            ) && isHeld && !isCollided
+                                        ) {
+                                            isCollided = true
+                                            triggerVibration(context)
+                                            delete = Color.Red
+                                        }
+                                        if (deleteBoxBounds != null && itemBounds!!.overlaps(
+                                                deleteBoxBounds!!
+                                            )
+                                        ) {
+                                            delete = Color.Red
+                                        } else {
+                                            delete = Color.LightGray
+                                        }
                                     }
                                 }
 
                                 .onGloballyPositioned { coordinates ->
-                                    val itemBounds = coordinates.boundsInRoot()
-                                    if (deleteBoxBounds != null && itemBounds.overlaps(deleteBoxBounds!!) &&isHeld) {
-                                        viewModel.deleteWish(wish)
-                                        triggerVibration(context)
-                                        isDragging = false
-                                    }
+                                    itemBounds = coordinates.boundsInRoot()
+
+
                                 }
                         ) {
                             WishItem(wish = wish) {
@@ -133,13 +163,15 @@ fun TwoColumnGridScreen(
                 },
                 modifier = Modifier.fillMaxSize()
             )
+
             if (isDragging) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(Color.Red)
+                        .padding(20.dp)
+                        .height(75.dp)
+                        .width(75.dp)
+                        .background(delete, CircleShape)
                         .onGloballyPositioned { coordinates ->
                             deleteBoxBounds = coordinates.boundsInRoot()
                         },
@@ -152,7 +184,8 @@ fun TwoColumnGridScreen(
                     )
                 }
             }
-        } else {
+        }
+        if (wishList.isEmpty()) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -169,6 +202,9 @@ fun TwoColumnGridScreen(
     }
 }
 
+
+
+
 fun triggerVibration(context: Context) {
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -177,6 +213,7 @@ fun triggerVibration(context: Context) {
         vibrator.vibrate(200)
     }
 }
+
 fun triggerVibrationLong(context: Context) {
     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -186,3 +223,10 @@ fun triggerVibrationLong(context: Context) {
     }
 }
 
+fun playSound(context: Context, soundResId: Int) {
+    val mediaPlayer = MediaPlayer.create(context, soundResId)
+    mediaPlayer.setOnCompletionListener {
+        it.release() // Release the media player resource after playing
+    }
+    mediaPlayer.start() // Start playing the sound
+}

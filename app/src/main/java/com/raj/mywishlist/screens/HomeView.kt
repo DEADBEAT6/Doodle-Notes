@@ -14,6 +14,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -34,37 +37,58 @@ import com.raj.mywishlist.screens.components.AppBarView
 import com.raj.mywishlist.screens.components.TwoColumnGridScreen
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(
-    navController: NavController, viewModel: WishViewModel
+    navController: NavController,
+    viewModel: WishViewModel
 ) {
+    var searchText by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
 
-    Scaffold(topBar = {
-        AppBarView("Doodle Notes", onBackNavClicked = {})
-    }, floatingActionButton = {
-        FloatingActionButton(modifier = Modifier.padding(all = 20.dp),
-            backgroundColor = Color.Black,
-
-            onClick = { //add navigation to home screen/
-                navController.navigate(Screen.AddScreen.route + "/0L")
-
-            }) {
-            Icon(
-                painter = painterResource(id = R.drawable.sharp_heart_broken_24),
-                contentDescription = null,
-                tint = Color.Red
-            )
-        }
+    val wishList by viewModel.getAllWishes.collectAsState(initial = emptyList())
+    val filteredWishList = if (searchText.isEmpty()) {
+        wishList
+    } else {
+        wishList.filter { it.title.contains(searchText, ignoreCase = true) || it.description.contains(searchText,ignoreCase = true) }
     }
 
+    Scaffold(
+        topBar = {
+            AppBarView(
+
+                title = "Doodle Notes",
+                searchText = searchText,
+                onSearchTextChanged = {
+                    searchText = it
+                },
+
+                onActiveChange = { active = it },
+                onBackNavClicked = {}
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(all = 20.dp),
+                backgroundColor = Color.Black,
+                onClick = {
+                    navController.navigate(Screen.AddScreen.route + "/0L")
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.sharp_heart_broken_24),
+                    contentDescription = null,
+                    tint = Color.Red
+                )
+            }
+        }
     ) {
-        val wishList by viewModel.getAllWishes.collectAsState(initial = emptyList())
-
         TwoColumnGridScreen(
-            wishList = wishList, navController = navController, viewModel = viewModel, padding = it
+            wishList = filteredWishList,
+            navController = navController,
+            viewModel = viewModel,
+            padding = it
         )
-
-
     }
 }
 

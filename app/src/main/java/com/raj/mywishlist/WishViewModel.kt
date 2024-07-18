@@ -21,6 +21,14 @@ class WishViewModel(
     var wishDrawingState by mutableStateOf("")
     var wishdrawlist by mutableStateOf<List<List<Point>>>(emptyList())
 
+    lateinit var getAllWishes: Flow<List<Wish>>
+
+    init {
+        viewModelScope.launch {
+            getAllWishes = wishRepository.getWishes()
+
+        }
+    }
 
     fun addDrawing(lineList: List<Point>) {
         wishdrawlist = wishdrawlist.toMutableList().apply {
@@ -45,17 +53,6 @@ class WishViewModel(
     private fun updateDrawingState() {
         wishDrawingState = convertListToJsonString(wishdrawlist)
         Log.d("wishDrawingState", wishDrawingState.toString())
-    }
-
-
-    lateinit var getAllWishes: Flow<List<Wish>>
-    lateinit var getAWishById: Flow<Wish>
-
-    init {
-        viewModelScope.launch {
-            getAllWishes = wishRepository.getWishes()
-
-        }
     }
 
     fun onWishTitleChange(newString: String) {
