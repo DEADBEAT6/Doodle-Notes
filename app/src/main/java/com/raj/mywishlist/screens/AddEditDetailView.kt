@@ -114,7 +114,7 @@ fun AddEditDetailView(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ if (!isButtonClicked.value) {
+                onClick = { if (!isButtonClicked.value) {
 
                     if (viewModel.wishTitleState.isNotEmpty()) {
                         isButtonClicked.value = true
