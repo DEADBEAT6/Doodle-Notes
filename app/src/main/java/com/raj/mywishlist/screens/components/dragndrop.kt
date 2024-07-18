@@ -6,7 +6,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,7 +48,9 @@ import com.raj.mywishlist.WishViewModel
 import com.raj.mywishlist.data.Wish
 import com.raj.mywishlist.navigation.Screen
 import com.raj.mywishlist.screens.WishItem
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -85,7 +87,7 @@ fun TwoColumnGridScreen(
                             modifier = Modifier
                                 .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
                                 .pointerInput(Unit) {
-                                    detectDragGestures(
+                                    detectDragGesturesAfterLongPress(
                                         onDragStart = {
                                             isHeld = true
                                             CoroutineScope(Dispatchers.Main).launch {
