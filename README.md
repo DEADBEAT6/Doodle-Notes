@@ -1,4 +1,4 @@
-# Doodle Notes Rich Text Editor | GestureDetection
+🎨 # Doodle Notes 🗒 
 
 Doodle Notes is an Android app that allows users to create and manage notes with two unique input methods: a rich text editor and a drawing interface. The app features an intuitive home screen, a heart-shaped add notes button, and a drag-and-drop feature to delete notes.
 
