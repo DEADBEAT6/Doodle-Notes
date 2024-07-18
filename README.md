@@ -5,6 +5,7 @@ Doodle Notes is an Android app that allows users to create and manage notes with
 ## ✨ Features
 
 - **🏠 Home Page**: Displays all created notes.
+- **🔎 Search Bar**: Searched for the Notes.
 - **❤️ Add Notes Button**: A heart-shaped button to add new notes.
 - **🗑️ Drag and Drop to Delete**: Easily delete notes by dragging them to a delete area.
 - **📝 Add/Edit Notes**: 
