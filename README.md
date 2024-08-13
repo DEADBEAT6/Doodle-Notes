@@ -1,3 +1,12 @@
+Name: Raj Aryan Jain
+Company: CODTECH IT SOLUTIONS
+ID: CT08AD971
+Domain:ANDROID DEVELOPMENT
+Duration: June to August 2023
+Mentor: SRAVANI GOUNI 
+
+
+
 ## 🎨 Doodle Notes 🗒 
 
 Doodle Notes is an Android app that allows users to create and manage notes with two unique input methods: a rich text editor and a drawing interface. The app features an intuitive home screen, a heart-shaped add notes button, and a drag-and-drop feature to delete notes.
