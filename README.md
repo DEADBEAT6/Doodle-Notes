@@ -1,10 +1,11 @@
-# 🎨 Doodle Notes 📝
+## 🎨 Doodle Notes 🗒 
 
 Doodle Notes is an Android app that allows users to create and manage notes with two unique input methods: a rich text editor and a drawing interface. The app features an intuitive home screen, a heart-shaped add notes button, and a drag-and-drop feature to delete notes.
 
 ## ✨ Features
 
 - **🏠 Home Page**: Displays all created notes.
+- **🔎 Search Bar**: Searched for the Notes.
 - **❤️ Add Notes Button**: A heart-shaped button to add new notes.
 - **🗑️ Drag and Drop to Delete**: Easily delete notes by dragging them to a delete area.
 - **📝 Add/Edit Notes**: 
@@ -14,9 +15,17 @@ Doodle Notes is an Android app that allows users to create and manage notes with
 - **🌈 Colorful and Easy to Navigate UI**: Enjoy a vibrant and user-friendly interface.
 
 ## 📸 Screenshots
+![home](https://github.com/user-attachments/assets/5f5007a2-9377-4045-b86c-34107b5c7408) 
+![search (1)](https://github.com/user-attachments/assets/811347c3-72d2-4df4-8c11-e820ee603e86) 
+![addnote (1)](https://github.com/user-attachments/assets/4891ff0a-6341-4938-81fb-a67565d6db4f) 
+![Delete (1)](https://github.com/user-attachments/assets/ca3167a6-f2db-497c-ad47-d82f783e8193) 
 
-![Home Page](path/to/homepage-screenshot.png)
-![Add/Edit Note](path/to/add-edit-note-screenshot.png)
+**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Home&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Search&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add/Edit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Delete**
+
 
 ## 🛠️ Installation
 
