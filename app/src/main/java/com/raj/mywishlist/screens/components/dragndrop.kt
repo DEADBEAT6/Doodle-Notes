@@ -152,7 +152,7 @@ fun TwoColumnGridScreen(
 
 
                                 }
-                        ) {
+                        )  {
                             WishItem(wish = wish) {
                                 val id = wish.id
                                 triggerVibration(context)
@@ -201,8 +201,6 @@ fun TwoColumnGridScreen(
         }
     }
 }
-
-
 
 
 fun triggerVibration(context: Context) {
